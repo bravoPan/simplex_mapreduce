@@ -1,27 +1,20 @@
 package main
 
 import "fmt"
-import "sync"
+// import "sync"
 
 func main () {
-    mk := make(chan bool)
-    // mk <- true
+    mk := make(chan bool, 2)
+    mk <- true
+    mk <- true
     task_comp := make(chan bool, 100)
-    var mux *sync.Mutex
-    mux = &sync.Mutex{}
 
+    // Execute 100 tasks by 2 workers
     for i:=0; i < 100; i++{
         go func (){
-            // for {
-            mux.Lock()
-            mk <- true
             func_in_mk := <- mk
             mk <- func_in_mk
-            mux.Unlock()
-
             task_comp <- true
-            // }
-            // return
         }()
     }
 

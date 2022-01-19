@@ -44,7 +44,6 @@ func (wk *Worker) Shutdown(args *ShutdownArgs, res *ShutdownReply) error {
   return nil;
 }
 
-
 func Register(master string, me string) {
     args := &RegisterArgs{}
     args.Worker = me
