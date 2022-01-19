@@ -41,9 +41,9 @@ func (mr *MapReduce) RunMaster() *list.List {
         wk := <- mr.registerChannel
 
         // avoid concurrency with mutual exclusion
-        mr.mux.Lock()
+        // mr.mux.Lock()
         _, found := mr.Workers[wk]
-        mr.mux.Unlock()
+        // mr.mux.Unlock()
         if !found {
           mr.mux.Lock()
           mr.Workers[wk] = &WorkerInfo{wk}
@@ -73,7 +73,7 @@ func (mr *MapReduce) RunMaster() *list.List {
     }(i)
   }
 
-  // move on to reduce when all map jobs have finished
+  // buffered channels to wait all workers to finish jobs. move on to reduce when all map jobs have finished
   for i := 0; i < mr.nMap; i++ {
     <- mapsCompleted
   }
@@ -89,14 +89,15 @@ func (mr *MapReduce) RunMaster() *list.List {
       for {
 
         wk := <- mr.registerChannel
-        mr.mux.Lock()
-        _, found := mr.Workers[wk]
-        mr.mux.Unlock()
-        if !found {
-          mr.mux.Lock()
-          mr.Workers[wk] = &WorkerInfo{wk}
-          mr.mux.Unlock()
-        }
+        // mr.mux.Lock()
+        // return the worker address
+        // _, found := mr.Workers[wk]
+        // mr.mux.Unlock()
+        // if !found {
+        //   mr.mux.Lock()
+        //   mr.Workers[wk] = &WorkerInfo{wk} // Workers is hashmap from worker ip to worker ip...
+        //   mr.mux.Unlock()
+        // }
 
         var reply DoJobReply;
         args := &DoJobArgs{}
