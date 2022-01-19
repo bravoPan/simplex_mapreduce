@@ -12,8 +12,9 @@ A golang implemented map reduce
 
 - First, Split the file into nMap(100) pieces, so that we have `1, 2, 3, ... 100` pieces files.
 - Second, Count the freuency(1) for every file and save each piece into nReduce(10) files
-    - ```1-1, 1-2, ... 1-10
-    2-1...2-10
-    100-1...100-10
-    ```
+```
+1-1, 1-2, ... 1-10
+2-1...2-10
+100-1...100-10
+```
 - Then Reduce every column into one file, so we have
