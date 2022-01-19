@@ -1,19 +1,33 @@
 package main
 
 import "fmt"
+import "strconv"
 // import "sync"
 
+type testStructChan struct {
+    workerId chan int
+}
+
 func main () {
-    mk := make(chan bool, 2)
-    mk <- true
-    mk <- true
-    task_comp := make(chan bool, 100)
+    newtestChan := new(testStructChan)
+    newtestChan.workerId = make(chan int, 2)
+    // mk := make(chan bool, 2)
+    // mk <- true
+    // mk <- true
 
     // Execute 100 tasks by 2 workers
+    // Assign 2 workers to master
+    for i:=0; i < 2; i++ {
+        newtestChan.workerId <- i
+    }
+
+    task_comp := make(chan bool, 100)
     for i:=0; i < 100; i++{
-        go func (){
-            func_in_mk := <- mk
-            mk <- func_in_mk
+        i := i
+        go func(){
+            func_in_mk := <- newtestChan.workerId
+            fmt.Println("Job ", strconv.Itoa(i), " is processed by Worker: ", func_in_mk)
+            newtestChan.workerId <- func_in_mk
             task_comp <- true
         }()
     }
@@ -21,6 +35,5 @@ func main () {
     for i := 0; i < 100; i++{
         <- task_comp
     }
-    <- mk
     fmt.Println("over")
 }
