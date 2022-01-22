@@ -28,7 +28,11 @@ Implemented by Golang RPC. First we need a MapReduce Struct to contain some info
 The initialization code could be like this:
 
 ```
-// In Worker.go, use go to register workers Concurrently, but need to avoid accessing the resources in Master with conflict. And also every worker needs to setup a server to be called from the master to DoJob(Map/Reduce) later on.
+'''
+In Worker.go, use go to register workers Concurrently, but need to avoid accessing the resources
+ in Master with conflict. And also every worker needs to setup a server to be called from the
+  master to DoJob(Map/Reduce) later on.
+'''
 
 func RegisterAtMaster(workerId) {
     call(Master, "Master.Register", workerId)
@@ -75,4 +79,32 @@ func RunMaster() {
 
 Also here is a note, the transportation layer for the server we used is UDS(unix domain socket) since we execute all the program in the same system, there's no need to exchange id via external network, but this is also easy to be tuned.
 
-### Worker Failure: One and Many
+### Worker Failure and Unit Test: One and Many
+
+To make a Single Worker Failure after 10 Jobs execution fail, in the unit test file `_test.go` we create a function `TestSingleFail`. Then in the `Worker` struct, we assign a `nRPC=10` by initialization. Here is the Code for `RunWorker`:
+
+```
+for wk.nRPC != 0 {
+    conn, err := wk.l.Accept()
+    if err == nil {
+        wk.nRPC -= 1
+        go rpcs.ServeConn(conn) // This ServeConn method runs on a single connection
+        wk.nJobs += 1
+    } else {
+        break
+    }
+}
+```
+
+Then we can this test on the failure `Worker` case. If the Worker fails, then there's a var in the Worker's struct to record the status of itself, after a period of the time, checks it for status, if the worker is dead, then reregister it at the Master thread.
+
+```
+//this funciton will run every period of time
+func CheckAlive() {
+    for i in all Workers{
+        if i.alive == false {
+            call(Master, "Master.Register") // to register itself
+        }
+    }
+}
+```

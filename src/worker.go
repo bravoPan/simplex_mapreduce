@@ -80,7 +80,7 @@ func RunWorker(MasterAddress string, me string,
     conn, err := wk.l.Accept()
     if err == nil {
       wk.nRPC -= 1
-      go rpcs.ServeConn(conn)
+      go rpcs.ServeConn(conn) //ServeConn runs the DefaultServer on a single connection.
       wk.nJobs += 1
     } else {
       break

@@ -153,11 +153,11 @@ func cleanup(mr *MapReduce) {
   mr.CleanupFiles()
   RemoveFile(mr.file)
 }
-//
+
 func TestBasic(t *testing.T) {
   fmt.Printf("Test: Basic mapreduce ...\n")
   mr := setup()
-  for i := 0; i < 2; i++ {
+  for i := 0; i < 5; i++ {
     go RunWorker(mr.MasterAddress, port("worker" + strconv.Itoa(i)),
                  MapFunc, ReduceFunc, -1)
   }
@@ -168,7 +168,7 @@ func TestBasic(t *testing.T) {
   cleanup(mr)
   fmt.Printf("  ... Basic Passed\n")
 }
-//
+
 // func TestOneFailure(t *testing.T) {
 //   fmt.Printf("Test: One Failure mapreduce ...\n")
 //   mr := setup()

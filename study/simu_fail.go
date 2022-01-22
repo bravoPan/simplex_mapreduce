@@ -11,12 +11,7 @@ type testStructChan struct {
 func main () {
     newtestChan := new(testStructChan)
     newtestChan.workerId = make(chan int, 2)
-    // mk := make(chan bool, 2)
-    // mk <- true
-    // mk <- true
 
-    // Execute 100 tasks by 2 workers
-    // Assign 2 workers to master
     for i:=0; i < 2; i++ {
         newtestChan.workerId <- i
     }
